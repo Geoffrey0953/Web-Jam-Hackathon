@@ -22,7 +22,17 @@ const Home = () => (
         options={{
           draggableCursor: 'default', 
           draggingCursor: 'grabbing', 
+          restriction: {
+            latLngBounds: {
+              north: 33.9519, 
+              south: 33.4657,
+              west: -118.1251, 
+              east: -117.5191, 
+            },
+            // strictBounds: true, // Prevent panning outside bounds
+          },
         }}
+
       />
     </APIProvider>
   </div>
