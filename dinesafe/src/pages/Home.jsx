@@ -77,11 +77,13 @@ const Home = () => {
 
       {/* Settings Transition */}
       <div
-        className={`absolute top-0 z-50 transition-transform duration-500 ${
+        className={`absolute top-0 left-0 z-50 transition-transform duration-500 ${
           showSettings ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <Settings toggleSettings={toggleSettings} />
+        <div className="p-4">
+          <Settings toggleSettings={toggleSettings} />
+        </div>
       </div>
     </div>
   );
