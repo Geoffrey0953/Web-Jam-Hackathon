@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import SearchBar from '../components/SearchBar.jsx';
 import Logo from '../assets/logo.svg';
@@ -7,9 +7,37 @@ import Settings from '../components/Settings.jsx';
 const Home = () => {
   const [showSettings, setShowSettings] = useState(false);
 
+  // Default fallback location: UCI
+  const uciCenter = { lat: 33.6405, lng: -117.8443 };
+
+  const [userLocation, setUserLocation] = useState(uciCenter); // Default location is UCI
+
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
   };
+
+  useEffect(() => {
+    // Get the user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting user location:', error);
+          // Fall back to UCI
+          setUserLocation(uciCenter);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+      // Fall back to UCI
+      setUserLocation(uciCenter);
+    }
+  }, []);
 
   return (
     <div className="relative">
@@ -23,14 +51,13 @@ const Home = () => {
       <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <Map
           style={{ width: '100vw', height: '100vh' }}
-          defaultCenter={{ lat: 22.54992, lng: 0 }}
-          defaultZoom={3}
+          defaultCenter={userLocation} // Use user's location or UCI fallback
+          defaultZoom={15} // Higher value for a zoomed-in map
           gestureHandling="greedy"
           disableDefaultUI={true}
           options={{
             draggableCursor: 'default',
             draggingCursor: 'grabbing',
-            types: ['restaurant'],
             restriction: {
               latLngBounds: {
                 north: 33.9519,
@@ -50,13 +77,11 @@ const Home = () => {
 
       {/* Settings Transition */}
       <div
-        className={`absolute top-0 left-0 z-50 transition-transform duration-500 ${
+        className={`absolute top-0 z-50 transition-transform duration-500 ${
           showSettings ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="">
-          <Settings toggleSettings={toggleSettings} />
-        </div>
+        <Settings toggleSettings={toggleSettings} />
       </div>
     </div>
   );
