@@ -124,6 +124,7 @@ const Home = () => {
           gestureHandling="greedy"
           disableDefaultUI={true}
           options={{
+            mapId: "316a6a241f019b2a",
             draggableCursor: "default",
             draggingCursor: "grabbing",
             restriction: {
