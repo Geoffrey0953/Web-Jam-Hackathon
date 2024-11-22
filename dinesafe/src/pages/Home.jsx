@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import SearchBar from '../components/SearchBar.jsx';
 import Logo from '../assets/logo.svg';
 import Settings from '../components/Settings.jsx';
@@ -48,7 +48,8 @@ const Home = () => {
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
-      <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+      {/* <APIProvider apiKey={port.meta.env.VITE_GOOGLE_MAPS_API_KEYim}> */}
+      <APIProvider apiKey="AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI">
         <Map
           style={{ width: '100vw', height: '100vh' }}
           defaultCenter={userLocation} // Use user's location or UCI fallback
