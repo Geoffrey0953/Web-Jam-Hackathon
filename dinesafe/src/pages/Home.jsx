@@ -132,7 +132,11 @@ const Home = () => {
   }, []);
 
   const handleMarkerClick = (restaurant) => {
+<<<<<<< Updated upstream
     //console.log(restaurant);
+=======
+    console.log(restaurant);
+>>>>>>> Stashed changes
     setSelectedPlace(restaurant);
   };
 
