@@ -120,7 +120,7 @@ const PlaceInfo = ({ place, onClose }) => {
         </>
       )}
 
-      <p className="text-base text-[#B62D2D] ml-8">
+      <div className="text-base text-[#B62D2D] ml-8">
         <span className="font-bold">
           {place?.reason ? (
             <ul className="list-disc list-inside">
@@ -138,11 +138,11 @@ const PlaceInfo = ({ place, onClose }) => {
             "No Information Available"
           )}
         </span>
-      </p>
+      </div>
       {place?.summary && (
         
-          <p className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed flex items-center flex-col">
-            <p>{place.summary}</p>
+          <div className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed flex items-center flex-col">
+            <span>{place.summary}</span>
             {place?.pdfURL && (
               <button className="rounded border-2 border-[#1E5AFF] flex mt-4 p-2">
                 <a 
@@ -156,7 +156,7 @@ const PlaceInfo = ({ place, onClose }) => {
                 <img src={Go} />
                 </button>
             )}
-          </p>
+          </div>
         
       )}
     </div>
