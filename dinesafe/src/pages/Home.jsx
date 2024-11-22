@@ -33,6 +33,7 @@ const Home = () => {
 
       if (data.status == 'OK') {
         const result = data.results[0];
+        
         const location = result.geometry.location;
         return location;
       }
@@ -63,7 +64,6 @@ const Home = () => {
       setUserLocation(uciCenter);
     }
   }, []);
-
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -122,6 +122,70 @@ const Home = () => {
                 east: -117.5191,
               },
             },
+            // styles: [
+            //   {
+            //     featureType: "poi", // Points of Interest (POI)
+            //     elementType: "all",
+            //     stylers: [{ visibility: "off" }], // Hide all POI by default
+            //   },
+            //   {
+            //     featureType: "poi.business", // Businesses (includes restaurants)
+            //     elementType: "labels.icon", // Show only restaurant icons
+            //     stylers: [{ visibility: "on" }],
+            //   },
+            //   {
+            //     featureType: "poi.business",
+            //     elementType: "labels.text",
+            //     stylers: [{ visibility: "on" }],
+            //   },
+            // ],
+            styles: [
+              {
+                featureType: "transit", // Transit stations
+                elementType: "all", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "administrative", // Transit stations
+                elementType: "all", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "poi.government", // Transit stations
+                elementType: "all", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "poi.medical", // Transit stations
+                elementType: "all", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "poi.park", // Transit stations
+                elementType: "labels", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "poi.school", // Transit stations
+                elementType: "labels", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "poi.attraction", // Transit stations
+                elementType: "labels", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "landscape", // Transit stations
+                elementType: "labels", // Disable labels for transit
+                stylers: [{ visibility: "off" }],
+              },
+              {
+                featureType: "road", // Transit stations
+                elementType: "all", // Disable labels for transit
+                stylers: [{ visibility: "simplified" }],
+              },
+            ],
           }}
         >
           {/* Add a marker for each restaurant */}
