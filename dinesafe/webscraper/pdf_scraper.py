@@ -5,7 +5,7 @@ import json
 import openai  # Install the OpenAI Python client library with `pip install openai`
 
 # Set your OpenAI API key
-openai.api_key = ""
+openai.api_key = "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"
 
 # Load your data
 try:
@@ -45,7 +45,7 @@ def summarize_text(text):
     try:
         # Use OpenAI ChatCompletion API for summarization
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Use gpt-4 if you prefer higher accuracy and are okay with higher costs
+            model="gpt-3.5-turbo-0125",  # Use gpt-4 if you prefer higher accuracy and are okay with higher costs
             messages=[
                 {"role": "system", "content": "You are an assistant that summarizes restaurant inspection reports."},
                 {"role": "user", "content": f"The following text contains inspection details of a restaurant. Summarize why the restaurant failed to pass the inspection in two sentences:\n\n{text}"}
@@ -63,7 +63,7 @@ for idx, entry in enumerate(data):
     pdf_url = entry['pdfURL']
     extracted_text = extract_pdf_text(pdf_url)
     entry['extractedText'] = extracted_text  # Add the extracted text to the entry
-
+    print(len(extracted_text))
     # Generate a summary using AI
     if extracted_text != "No text found" and not extracted_text.startswith("Error"):
         summary = summarize_text(extracted_text)

@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { AdvancedMarker, APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
-import SearchBar from '../components/SearchBar.jsx';
-import Logo from '../assets/logo.svg';
-import Settings from '../components/Settings.jsx';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  AdvancedMarker,
+  APIProvider,
+  Map,
+  Marker,
+} from "@vis.gl/react-google-maps";
+import SearchBar from "../components/SearchBar.jsx";
+import Logo from "../assets/logo.svg";
+import Settings from "../components/Settings.jsx";
+import RefreshButton from "../components/Refresh.jsx";
 
 const Home = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [places, setPlaces] = useState([]);
   const uciCenter = { lat: 33.6405, lng: -117.8443 };
-
   const [userLocation, setUserLocation] = useState(uciCenter); // Default location is UCI
 
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
   };
 
-  async function updateUserLocation(){
+  async function updateUserLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position)
+          console.log(position);
           setUserLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -36,34 +41,35 @@ const Home = () => {
     updateUserLocation();
   }, []);
 
-  useEffect(() =>{
+  useEffect(() => {
+    console.log("hai");
     fetchNearbyRestaurants();
-  }, [userLocation])
+  }, [userLocation]);
 
   const fetchNearbyRestaurants = async () => {
     const body = {
-      includedTypes: ['restaurant'],
-      maxResultCount: 10,
+      includedTypes: ["restaurant", "cafe"],
+      maxResultCount: 20,
       locationRestriction: {
         circle: {
           center: {
             latitude: userLocation.lat,
             longitude: userLocation.lng,
           },
-          radius: 50000, // 50 km radius
+          radius: 50000,
         },
       },
     };
 
     try {
       const response = await fetch(
-        'https://places.googleapis.com/v1/places:searchNearby',
+        "https://places.googleapis.com/v1/places:searchNearby",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        'X-Goog-FieldMask': 'places.displayName,places.location',
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+            "X-Goog-FieldMask": "places.displayName,places.location",
           },
           body: JSON.stringify(body),
         }
@@ -71,19 +77,22 @@ const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched places:', data);
+        console.log("Fetched places:", data);
         setPlaces(data.places || []);
       } else {
         const errorDetails = await response.json().catch(() => ({
-          error: 'Invalid JSON response',
+          error: "Invalid JSON response",
         }));
-        console.error('Error fetching nearby places:', response.status, errorDetails);
+        console.error(
+          "Error fetching nearby places:",
+          response.status,
+          errorDetails
+        );
       }
     } catch (error) {
-      console.error('Error in fetchNearbyRestaurants:', error.message);
+      console.error("Error in fetchNearbyRestaurants:", error.message);
     }
   };
-
 
   return (
     <div className="relative">
@@ -96,24 +105,31 @@ const Home = () => {
 
       <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <Map
-          style={{ width: '100vw', height: '100vh' }}
+          style={{ width: "100vw", height: "100vh" }}
           defaultCenter={userLocation}
           defaultZoom={12}
           gestureHandling="greedy"
           disableDefaultUI={true}
           options={{
-            draggableCursor: 'default',
-            draggingCursor: 'grabbing',
+            draggableCursor: "default",
+            draggingCursor: "grabbing",
           }}
           mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
         >
           {places.map((place, index) => (
-
-            <AdvancedMarker key={index} position={{lat: place.location.latitude, lng: place.location.longitude}} />
+            <AdvancedMarker
+              key={index}
+              position={{
+                lat: place.location.latitude,
+                lng: place.location.longitude,
+              }}
+            />
           ))}
+          <div className="z-[1000] absolute left-16 top-16">
+            <RefreshButton callback={setUserLocation} />
+          </div>
         </Map>
       </APIProvider>
-      <button onClick={() => updateUserLocation()} className='z-[1000] absolute left-16 top-16'>refresh</button>
 
       {showSettings && (
         <div className="absolute inset-0 bg-black/50 z-40"></div>
@@ -121,7 +137,7 @@ const Home = () => {
 
       <div
         className={`absolute top-0 left-0 z-50 transition-transform duration-500 ${
-          showSettings ? 'translate-x-0' : '-translate-x-full'
+          showSettings ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <Settings toggleSettings={toggleSettings} />
