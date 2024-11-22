@@ -13,7 +13,9 @@ const Home = () => {
 
   const [userLocation, setUserLocation] = useState(uciCenter); // Default location is UCI
   const [restaurants, setRestaurants] = useState([]); // State to store restaurant data
+  const [inspectedRestaurants, setInspectedRestaurants] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null); // State for the currently selected place
+
 
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
@@ -99,7 +101,38 @@ const Home = () => {
     fetchRestaurants();
   }, []);
 
+  useEffect(() => {
+    const fetch300Restaurants = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/300restaurants");
+        const data = await response.json();
+
+        const transformedData = data.map((inspectedRestaurants) => ({
+          _id: inspectedRestaurants.id,
+          name: inspectedRestaurants.name,
+          address: inspectedRestaurants.address,
+          summary: inspectedRestaurants.summary,
+          pdfURL: inspectedRestaurants.pdfUrl,
+          catergories: inspectedRestaurants.catergories,
+          lat: inspectedRestaurants.location.lat,
+          lng: inspectedRestaurants.location.lng,
+          imported_at: inspectedRestaurants.imported_at
+        }))
+        
+        
+        setInspectedRestaurants(transformedData);
+        return transformedData;
+        
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
+    };
+
+    fetch300Restaurants();
+  }, []);
+
   const handleMarkerClick = (restaurant) => {
+    //console.log(restaurant);
     setSelectedPlace(restaurant);
   };
 
@@ -144,15 +177,27 @@ const Home = () => {
               position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
               title={restaurant.name}
               onClick={() => handleMarkerClick(restaurant)} // Handle marker click
+              icon={"http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"}
             />
           ))}
+          
+          {/* Add yellow markers for failed food inspections, not closed restaurants*/}
+          {inspectedRestaurants.map((inspectedRestaurant) => (
+            <Marker
+              key={inspectedRestaurant._id}
+              position={{ lat: inspectedRestaurant.lat, lng: inspectedRestaurant.lng }}
+              title={inspectedRestaurant.name}
+              onClick={() => handleMarkerClick(inspectedRestaurant)} // Handle marker click
+            />
+          ))}
+            
         </Map>
       </APIProvider>
 
       {/* PlaceInfo Component */}
       {selectedPlace && (
         <div className="">
-          <PlaceInfo place={selectedPlace} onClose={closePlaceInfo} />
+          <PlaceInfo place = {selectedPlace} onClose={closePlaceInfo} />
         </div>
       )}
 

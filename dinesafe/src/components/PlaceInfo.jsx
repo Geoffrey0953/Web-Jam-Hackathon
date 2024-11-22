@@ -1,7 +1,7 @@
 import React from "react";
 import FillerPic from "../assets/FillerPic.jpg";
-
-const PlaceInfo = ({ place, onClose }) => {
+//{ name, addr, pdfUrl, reason = "" , categories = , summary, onClose }
+const PlaceInfo = ({place, onClose}) => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
   };
@@ -14,7 +14,7 @@ const PlaceInfo = ({ place, onClose }) => {
       />
       <div className="w-full border-b-2 border-gray-300">
         <p className="text-3xl">Place Name</p>
-        <p className="text-base text-[#5C5C5C]">Place Type</p>
+        {place && <p className="text-base text-[#5C5C5C]">Place Type</p>}
         <p className="text-base">Place Description</p>
         <p
           className="text-base text-[#1E5AFF] cursor-pointer"
