@@ -16,7 +16,6 @@ const Home = () => {
   const [inspectedRestaurants, setInspectedRestaurants] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null); // State for the currently selected place
 
-
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
   };
@@ -104,7 +103,9 @@ const Home = () => {
   useEffect(() => {
     const fetch300Restaurants = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/300restaurants");
+        const response = await fetch(
+          "http://localhost:5000/api/300restaurants"
+        );
         const data = await response.json();
 
         const transformedData = data.map((inspectedRestaurants) => ({
@@ -116,13 +117,11 @@ const Home = () => {
           catergories: inspectedRestaurants.catergories,
           lat: inspectedRestaurants.location.lat,
           lng: inspectedRestaurants.location.lng,
-          imported_at: inspectedRestaurants.imported_at
-        }))
-        
-        
+          imported_at: inspectedRestaurants.imported_at,
+        }));
+
         setInspectedRestaurants(transformedData);
         return transformedData;
-        
       } catch (error) {
         console.error("Error fetching restaurants:", error);
       }
@@ -132,11 +131,7 @@ const Home = () => {
   }, []);
 
   const handleMarkerClick = (restaurant) => {
-<<<<<<< Updated upstream
-    //console.log(restaurant);
-=======
     console.log(restaurant);
->>>>>>> Stashed changes
     setSelectedPlace(restaurant);
   };
 
@@ -184,24 +179,26 @@ const Home = () => {
               icon={"http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"}
             />
           ))}
-          
+
           {/* Add yellow markers for failed food inspections, not closed restaurants*/}
           {inspectedRestaurants.map((inspectedRestaurant) => (
             <Marker
               key={inspectedRestaurant._id}
-              position={{ lat: inspectedRestaurant.lat, lng: inspectedRestaurant.lng }}
+              position={{
+                lat: inspectedRestaurant.lat,
+                lng: inspectedRestaurant.lng,
+              }}
               title={inspectedRestaurant.name}
               onClick={() => handleMarkerClick(inspectedRestaurant)} // Handle marker click
             />
           ))}
-            
         </Map>
       </APIProvider>
 
       {/* PlaceInfo Component */}
       {selectedPlace && (
         <div className="">
-          <PlaceInfo place = {selectedPlace} onClose={closePlaceInfo} />
+          <PlaceInfo place={selectedPlace} onClose={closePlaceInfo} />
         </div>
       )}
 
