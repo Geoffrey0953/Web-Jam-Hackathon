@@ -3,6 +3,8 @@ from pymongo import MongoClient
 import sys
 from datetime import datetime
 import logging
+from urllib.parse import quote_plus
+import requests
 
 # Set up logging
 logging.basicConfig(
@@ -22,6 +24,44 @@ class RestaurantInspectionLoader:
             logger.error(f"Failed to connect to MongoDB: {str(e)}")
             raise
 
+
+    def fetchData(self, address):
+        url_safe_address = quote_plus(address)
+        APIKEY = "AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI"
+        url = f"https://maps.googleapis.com/maps/api/geocode/json?address={url_safe_address}&key={APIKEY}"
+        
+        try:
+            # Make HTTP request
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an exception for bad status codes
+            
+            # Parse JSON response
+            data = response.json()
+            
+            # Check if the request was successful
+            if data['status'] == 'OK':
+                # Get the first result
+                result = data['results'][0]
+                
+                # Extract location data
+                location = result['geometry']['location']
+                #formatted_address = result['formatted_address']
+                
+                return location
+            # {
+                    
+            #         # 'lat': location['lat'],
+            #         # 'lng': location['lng'],
+            #         #'formatted_address': formatted_address
+            #     }
+            else:
+                logger.error(f"Geocoding failed with status: {data['status']}")
+                return None
+                
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching geocoding data: {str(e)}")
+            return None
+
     def extract_required_fields(self, document):
         """Extract and validate required fields from the document"""
         try:
@@ -31,7 +71,9 @@ class RestaurantInspectionLoader:
                 "summary": document["summary"],
                 "pdfUrl": document["pdfUrl"],
                 "categories": document["categories"],
-                "imported_at": datetime.utcnow()
+                "location": self.fetchData(document["address"]),
+                "imported_at": datetime
+                .utcnow()
             }
         except KeyError as e:
             logger.error(f"Missing required field: {str(e)}")
@@ -46,7 +88,7 @@ class RestaurantInspectionLoader:
             
             # Get the collection
             collection = self.db[collection_name]
-            
+             
             documents_to_insert = []
             
             # Handle both single document and array of documents

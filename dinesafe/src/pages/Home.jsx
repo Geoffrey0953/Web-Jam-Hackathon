@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import SearchBar from "../components/SearchBar.jsx";
 import Logo from "../assets/logo.svg";
@@ -12,6 +12,9 @@ const Home = () => {
 
   const [userLocation, setUserLocation] = useState(uciCenter); // Default location is UCI
   const [restaurants, setRestaurants] = useState([]); // State to store restaurant data
+
+  const [mapVisible, setMapVisible] = useState(false); // Added
+  const mapContainerRef = useRef(null); // Added
 
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
@@ -33,7 +36,6 @@ const Home = () => {
 
       if (data.status == 'OK') {
         const result = data.results[0];
-        
         const location = result.geometry.location;
         return location;
       }
@@ -41,6 +43,28 @@ const Home = () => {
       console.error("Error fetching geocoding data", error);
     }
   };
+
+  // Lazy loading
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMapVisible(true); // Load the map when it becomes visible
+        }
+      },
+      { threshold: 0.1 } // Trigger when 10% of the map container is visible
+    );
+  
+    if (mapContainerRef.current) {
+      observer.observe(mapContainerRef.current);
+    }
+  
+    return () => {
+      if (mapContainerRef.current) {
+        observer.unobserve(mapContainerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Get the user's current location
@@ -104,100 +128,76 @@ const Home = () => {
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
-      <APIProvider apiKey="AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI">
-        <Map
-          style={{ width: "100vw", height: "100vh" }}
-          defaultCenter={userLocation} // Use user's location or UCI fallback
-          defaultZoom={15} // Higher value for a zoomed-in map
-          gestureHandling="greedy"
-          disableDefaultUI={true}
-          options={{
-            draggableCursor: "default",
-            draggingCursor: "grabbing",
-            restriction: {
-              latLngBounds: {
-                north: 33.9519,
-                south: 33.4657,
-                west: -118.1251,
-                east: -117.5191,
-              },
-            },
-            // styles: [
-            //   {
-            //     featureType: "poi", // Points of Interest (POI)
-            //     elementType: "all",
-            //     stylers: [{ visibility: "off" }], // Hide all POI by default
-            //   },
-            //   {
-            //     featureType: "poi.business", // Businesses (includes restaurants)
-            //     elementType: "labels.icon", // Show only restaurant icons
-            //     stylers: [{ visibility: "on" }],
-            //   },
-            //   {
-            //     featureType: "poi.business",
-            //     elementType: "labels.text",
-            //     stylers: [{ visibility: "on" }],
-            //   },
-            // ],
-            styles: [
-              {
-                featureType: "transit", // Transit stations
-                elementType: "all", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "administrative", // Transit stations
-                elementType: "all", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "poi.government", // Transit stations
-                elementType: "all", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "poi.medical", // Transit stations
-                elementType: "all", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "poi.park", // Transit stations
-                elementType: "labels", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "poi.school", // Transit stations
-                elementType: "labels", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "poi.attraction", // Transit stations
-                elementType: "labels", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "landscape", // Transit stations
-                elementType: "labels", // Disable labels for transit
-                stylers: [{ visibility: "off" }],
-              },
-              {
-                featureType: "road", // Transit stations
-                elementType: "all", // Disable labels for transit
-                stylers: [{ visibility: "simplified" }],
-              },
-            ],
-          }}
-        >
-          {/* Add a marker for each restaurant */}
-          {restaurants.map((restaurant) => (
-            <Marker
-              key={restaurant.id}
-              position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
-              title={restaurant.name}
-            />
-          ))}
-        </Map>
-      </APIProvider>
+      {/* Map Container */}
+      <div ref={mapContainerRef} style={{ width: "100%", height: "100vh" }}>
+        {mapVisible && (
+          <APIProvider apiKey="AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI">
+            <Map
+              style={{ width: "100%", height: "100%" }}
+              defaultCenter={userLocation} // Use user's location or UCI fallback
+              defaultZoom={15} // Higher value for a zoomed-in map
+              gestureHandling="greedy"
+              disableDefaultUI={true}
+              options={{
+                draggableCursor: "default",
+                draggingCursor: "grabbing",
+                restriction: {
+                  latLngBounds: {
+                    north: 33.9519,
+                    south: 33.4657,
+                    west: -118.1251,
+                    east: -117.5191,
+                  },
+                },
+                styles: [
+                  {
+                    featureType: "poi.medical", // Transit stations
+                    elementType: "all", // Disable labels for transit
+                    stylers: [{ visibility: "off" }],
+                  },
+                  {
+                    featureType: "poi.park", // Transit stations
+                    elementType: "labels", // Disable labels for transit
+                    stylers: [{ visibility: "off" }],
+                  },
+                  {
+                    featureType: "poi.school", // Transit stations
+                    elementType: "labels", // Disable labels for transit
+                    stylers: [{ visibility: "off" }],
+                  },
+                  {
+                    featureType: "poi.attraction", // Transit stations
+                    elementType: "labels", // Disable labels for transit
+                    stylers: [{ visibility: "off" }],
+                  },
+                  {
+                    featureType: "landscape", // Transit stations
+                    elementType: "labels", // Disable labels for transit
+                    stylers: [{ visibility: "off" }],
+                  },
+                  {
+                    featureType: "road", // Transit stations
+                    elementType: "all", // Disable labels for transit
+                    stylers: [{ visibility: "simplified" }],
+                  },
+                ],
+              }}
+            >
+              {/* Add a marker for each restaurant */}
+              {restaurants.map((restaurant) => (
+                <Marker
+                  key={restaurant.id}
+                  position={{
+                    lat: restaurant.latitude,
+                    lng: restaurant.longitude,
+                  }}
+                  title={restaurant.name}
+                />
+              ))}
+            </Map>
+          </APIProvider>
+        )}
+      </div>
 
       {/* Dimmed Background */}
       {showSettings && (
