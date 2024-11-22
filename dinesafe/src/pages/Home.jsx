@@ -1,97 +1,110 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  AdvancedMarker,
-  APIProvider,
-  Map,
-  Marker,
-} from "@vis.gl/react-google-maps";
+import React, { useState, useEffect } from "react";
+import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import SearchBar from "../components/SearchBar.jsx";
 import Logo from "../assets/logo.svg";
 import Settings from "../components/Settings.jsx";
-import RefreshButton from "../components/Refresh.jsx";
+import PlaceInfo from "../components/PlaceInfo.jsx"; // Import PlaceInfo component
 
 const Home = () => {
   const [showSettings, setShowSettings] = useState(false);
-  const [places, setPlaces] = useState([]);
+
+  // Default fallback location: UCI
   const uciCenter = { lat: 33.6405, lng: -117.8443 };
+
   const [userLocation, setUserLocation] = useState(uciCenter); // Default location is UCI
+  const [restaurants, setRestaurants] = useState([]); // State to store restaurant data
+  const [selectedPlace, setSelectedPlace] = useState(null); // State for the currently selected place
 
   const toggleSettings = () => {
     setShowSettings((prev) => !prev);
   };
 
-  async function updateUserLocation() {
+  const generateGeocodingURL = (address, city) => {
+    const APIKEY = "AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI"; // Comment out later
+    const fullAddress = `${address}, ${city}`;
+    const URLSafeAddress = encodeURIComponent(fullAddress);
+
+    return `https://maps.googleapis.com/maps/api/geocode/json?address=${URLSafeAddress}&key=${APIKEY}`;
+  };
+
+  const fetchGeocodingData = async (address, city) => {
+    try {
+      const url = generateGeocodingURL(address, city);
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        const result = data.results[0];
+        const location = result.geometry.location;
+        return location;
+      }
+    } catch (error) {
+      console.error("Error fetching geocoding data", error);
+    }
+  };
+
+  useEffect(() => {
+    // Get the user's current location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position);
           setUserLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
         },
-        () => {
+        (error) => {
+          console.error("Error getting user location:", error);
+          // Fall back to UCI
           setUserLocation(uciCenter);
         }
       );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+      // Fall back to UCI
+      setUserLocation(uciCenter);
     }
-  }
-
-  useEffect(() => {
-    updateUserLocation();
   }, []);
 
   useEffect(() => {
-    console.log("hai");
-    fetchNearbyRestaurants();
-  }, [userLocation]);
+    const fetchRestaurants = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/restaurants");
+        const data = await response.json();
 
-  const fetchNearbyRestaurants = async () => {
-    const body = {
-      includedTypes: ["restaurant", "cafe"],
-      maxResultCount: 20,
-      locationRestriction: {
-        circle: {
-          center: {
-            latitude: userLocation.lat,
-            longitude: userLocation.lng,
-          },
-          radius: 50000,
-        },
-      },
+        const transformedData = await Promise.all(
+          data.map(async (restaurant) => {
+            const location = await fetchGeocodingData(
+              restaurant.address,
+              restaurant.city
+            );
+            return {
+              id: restaurant._id,
+              name: restaurant.establishment_name,
+              address: restaurant.address,
+              city: restaurant.city,
+              reason: restaurant.reason_for_closure,
+              latitude: location.lat,
+              longitude: location.lng,
+            };
+          })
+        );
+
+        setRestaurants(transformedData);
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
     };
 
-    try {
-      const response = await fetch(
-        "https://places.googleapis.com/v1/places:searchNearby",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Goog-Api-Key": import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-            "X-Goog-FieldMask": "places.displayName,places.location",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+    fetchRestaurants();
+  }, []);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Fetched places:", data);
-        setPlaces(data.places || []);
-      } else {
-        const errorDetails = await response.json().catch(() => ({
-          error: "Invalid JSON response",
-        }));
-        console.error(
-          "Error fetching nearby places:",
-          response.status,
-          errorDetails
-        );
-      }
-    } catch (error) {
-      console.error("Error in fetchNearbyRestaurants:", error.message);
-    }
+  const handleMarkerClick = (restaurant) => {
+    setSelectedPlace(restaurant);
+  };
+
+  const closePlaceInfo = () => {
+    setSelectedPlace(null);
   };
 
   return (
@@ -103,45 +116,59 @@ const Home = () => {
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
-      {/* <APIProvider apiKey={port.meta.env.VITE_GOOGLE_MAPS_API_KEYim}> */}
       <APIProvider apiKey="AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI">
         <Map
           style={{ width: "100vw", height: "100vh" }}
           defaultCenter={userLocation}
-          defaultZoom={12}
+          defaultZoom={15}
           gestureHandling="greedy"
           disableDefaultUI={true}
           options={{
             draggableCursor: "default",
             draggingCursor: "grabbing",
+            restriction: {
+              latLngBounds: {
+                north: 33.9519,
+                south: 33.4657,
+                west: -118.1251,
+                east: -117.5191,
+              },
+            },
           }}
-          mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
         >
-          {places.map((place, index) => (
-            <AdvancedMarker
-              key={index}
-              position={{
-                lat: place.location.latitude,
-                lng: place.location.longitude,
-              }}
+          {/* Add a marker for each restaurant */}
+          {restaurants.map((restaurant) => (
+            <Marker
+              key={restaurant.id}
+              position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
+              title={restaurant.name}
+              onClick={() => handleMarkerClick(restaurant)} // Handle marker click
             />
           ))}
-          <div className="z-[1000] absolute left-16 top-16">
-            <RefreshButton callback={setUserLocation} />
-          </div>
         </Map>
       </APIProvider>
 
+      {/* PlaceInfo Component */}
+      {selectedPlace && (
+        <div className="">
+          <PlaceInfo place={selectedPlace} onClose={closePlaceInfo} />
+        </div>
+      )}
+
+      {/* Dimmed Background */}
       {showSettings && (
         <div className="absolute inset-0 bg-black/50 z-40"></div>
       )}
 
+      {/* Settings Transition */}
       <div
         className={`absolute top-0 left-0 z-50 transition-transform duration-500 ${
           showSettings ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <Settings toggleSettings={toggleSettings} />
+        <div className="p-4">
+          <Settings toggleSettings={toggleSettings} />
+        </div>
       </div>
     </div>
   );
