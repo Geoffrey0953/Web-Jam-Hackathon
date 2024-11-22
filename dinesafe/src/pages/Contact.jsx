@@ -38,7 +38,7 @@ const Contact = () => {
             <p className="font-museo text-2xl font-semibold ">Anthony Suh</p>
             <p className="font-museo text-xl font-regular text-[#414A62]">Computer Science</p>
             <p className="font-museo text-xl font-light text-center">Database and Fullstack Implementation</p>
-            <p className="font-museo text-xl font-regular text-[#1E5AFF]">anthod1@uci.edu</p>
+            <p className="font-museo text-xl font-regular text-[#1E5AFF]">anthods1@uci.edu</p>
         </div>
         <div className="flex justify-center items-center flex-col w-72">
             <img src={Geoffrey} className="w-48"></img>
