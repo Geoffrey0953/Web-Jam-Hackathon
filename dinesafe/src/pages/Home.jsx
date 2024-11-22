@@ -4,7 +4,6 @@ import {
   APIProvider,
   Map,
   Marker,
-  Marker,
 } from "@vis.gl/react-google-maps";
 import SearchBar from "../components/SearchBar.jsx";
 import Logo from "../assets/logo.svg";
