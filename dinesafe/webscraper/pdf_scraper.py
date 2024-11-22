@@ -5,7 +5,7 @@ import json
 import openai  # Install the OpenAI Python client library with `pip install openai`
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = ""
 
 # Load your data
 try:
