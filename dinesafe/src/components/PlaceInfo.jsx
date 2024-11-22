@@ -3,6 +3,7 @@ import FillerPic from "../assets/FillerPic.jpg";
 import Cancel from "../assets/cancel.svg";
 
 const PlaceInfo = ({ place, onClose }) => {
+  console.log(place);
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
       alert("Address copied to clipboard!");

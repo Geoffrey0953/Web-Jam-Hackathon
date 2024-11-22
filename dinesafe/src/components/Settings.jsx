@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Logo from "../assets/logo.svg";
 import Cancel from "../assets/cancel.svg";
+import { useNavigate } from "react-router-dom";
 
 const Settings = ({ toggleSettings, onMapIdChange }) => {
   const [isToggled, setIsToggled] = useState(false);
@@ -42,6 +43,12 @@ const Settings = ({ toggleSettings, onMapIdChange }) => {
               }`}
             ></div>
           </div>
+        </div>
+        <div>
+          <button onClick={() => (window.location.href = "/about")}>
+            About
+          </button>
+          <button>Contact</button>
         </div>
       </div>
     </div>

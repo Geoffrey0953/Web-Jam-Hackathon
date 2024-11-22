@@ -153,6 +153,7 @@ const Home = () => {
               key={restaurant.id}
               position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
               title={restaurant.name}
+              onClick={() => setSelectedPlace(restaurant)} // Set selectedPlace to restaurant data
             />
           ))}
 
@@ -164,6 +165,7 @@ const Home = () => {
                 lng: inspectedRestaurant.lng,
               }}
               title={inspectedRestaurant.name}
+              onClick={() => setSelectedPlace(inspectedRestaurant)} // Set selectedPlace to inspectedRestaurant data
             />
           ))}
         </Map>

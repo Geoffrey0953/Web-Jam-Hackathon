@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         josefin: ['"Josefin Sans"', "sans-serif"], // Define a custom key for Josefin Sans
+        museo: ['"MuseoModerno"', "sans-serif"], // Define a custom key for MuseoModerno
       },
     },
   },
