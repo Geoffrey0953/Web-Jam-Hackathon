@@ -70,7 +70,6 @@ const Home = () => {
         console.error("Error fetching restaurants:", error);
       }
     };
-
     fetchRestaurants();
   }, []);
 
@@ -84,12 +83,13 @@ const Home = () => {
 
         setInspectedRestaurants(
           data.map((inspectedRestaurant) => ({
-            _id: inspectedRestaurant.id,
+            
+            id: inspectedRestaurant._id,
             name: inspectedRestaurant.name,
             address: inspectedRestaurant.address,
             summary: inspectedRestaurant.summary,
             pdfURL: inspectedRestaurant.pdfUrl,
-            catergories: inspectedRestaurant.catergories,
+            categories: inspectedRestaurant.categories,
             lat: inspectedRestaurant.location.lat,
             lng: inspectedRestaurant.location.lng,
             imported_at: inspectedRestaurant.imported_at,
@@ -102,6 +102,10 @@ const Home = () => {
 
     fetch300Restaurants();
   }, []);
+
+  
+
+  // Use the IDs from the restaurants given by our two functions
 
   const fetchGeocodingData = async (address, city) => {
     try {
@@ -119,11 +123,62 @@ const Home = () => {
     }
   };
 
+  // Search bar functionality
+
+  const fetchRestaurantsByQuery = async (query) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/restaurants?query=${query}`);
+      const data = await response.json();
+  
+      setRestaurants(
+        data.map((restaurant) => ({
+          id: restaurant._id,
+          name: restaurant.establishment_name,
+          address: restaurant.address,
+          city: restaurant.city,
+          latitude: restaurant.latitude,
+          longitude: restaurant.longitude,
+        }))
+      );
+    } catch (error) {
+      console.error("Error searching restaurants:", error);
+    }
+  };
+  
+  const fetchInspectedRestaurantsByQuery = async (query) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/300restaurants?query=${query}`);
+      const data = await response.json();
+  
+      setInspectedRestaurants(
+        data.map((restaurant) => ({
+          id: restaurant._id,
+          name: restaurant.name,
+          address: restaurant.address.replace(/\s+(?:Suite|Ste|#)\s+\S+/i, ''),
+          lat: restaurant.location.lat,
+          lng: restaurant.location.lng,
+        }))
+      );
+    } catch (error) {
+      console.error("Error searching inspected restaurants:", error);
+    }
+  };
+  
+  const handleSearch = (query) => {
+    fetchRestaurantsByQuery(query);
+    fetchInspectedRestaurantsByQuery(query);
+  };
+  
+
+  // // Places API picture right here :D 
+  // In Home.jsx or a separate API service file
+  
+
   return (
     <div className="relative">
       <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-black/40 to-transparent pointer-events-none z-50"></div>
       <div className="flex flex-row justify-between absolute w-full mt-4">
-        <SearchBar toggleSettings={toggleSettings} />
+        <SearchBar toggleSettings={toggleSettings} onSearch={handleSearch} />
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
@@ -148,12 +203,19 @@ const Home = () => {
             },
           }}
         >
+        {/* // Original restaurants */}
           {restaurants.map((restaurant) => (
             <Marker
               key={restaurant.id}
               position={{ lat: restaurant.latitude, lng: restaurant.longitude }}
               title={restaurant.name}
               onClick={() => setSelectedPlace(restaurant)} // Set selectedPlace to restaurant data
+              icon={{
+                url:
+                  selectedPlace?.id === restaurant.id
+                    ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Highlighted marker
+                    : "http://maps.google.com/mapfiles/ms/icons/red-dot.png", // Default marker
+              }}
             />
           ))}
 
@@ -165,6 +227,12 @@ const Home = () => {
                 lng: inspectedRestaurant.lng,
               }}
               title={inspectedRestaurant.name}
+              icon={{
+                url:
+                  selectedPlace?.id === inspectedRestaurant.id
+                    ? "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Highlighted marker
+                    : "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png", // Default marker
+              }}
               onClick={() => setSelectedPlace(inspectedRestaurant)} // Set selectedPlace to inspectedRestaurant data
             />
           ))}

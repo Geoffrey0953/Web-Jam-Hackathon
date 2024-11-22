@@ -27,7 +27,7 @@ const Settings = ({ toggleSettings, onMapIdChange }) => {
         </button>
       </div>
 
-      <h1>Settings</h1>
+      <h1 className="font-bold">Settings</h1>
       <div className="flex flex-col">
         <div className="flex items-center">
           <span className="mr-4">Dark Mode</span>
@@ -44,11 +44,13 @@ const Settings = ({ toggleSettings, onMapIdChange }) => {
             ></div>
           </div>
         </div>
-        <div>
+        <div className="flex flex-col items-start">
           <button onClick={() => (window.location.href = "/about")}>
             About
           </button>
-          <button>Contact</button>
+          <button onClick={() => (window.location.href = "/contact")}>
+            Contact
+          </button>
         </div>
       </div>
     </div>
