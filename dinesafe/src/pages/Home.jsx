@@ -22,6 +22,12 @@ const Home = () => {
     localStorage.setItem("darkMode", isDarkMode);
   };
 
+  const handleLocationSelect = (lat, lng) => {
+    console.log(userLocation);
+    setUserLocation({ lat, lng });
+    console.log(userLocation);
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -109,7 +115,7 @@ const Home = () => {
 
   const fetchGeocodingData = async (address, city) => {
     try {
-      const APIKEY = "AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI";
+      const APIKEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
       const fullAddress = encodeURIComponent(`${address}, ${city}`);
       const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${fullAddress}&key=${APIKEY}`;
       const response = await fetch(url);
@@ -171,18 +177,19 @@ const Home = () => {
   
 
   // // Places API picture right here :D 
-  // In Home.jsx or a separate API service file
+  // In Home.jsx or a separate API service filefw
   
 
   return (
     <div className="relative">
       <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-black/40 to-transparent pointer-events-none z-50"></div>
       <div className="flex flex-row justify-between absolute w-full mt-4">
-        <SearchBar toggleSettings={toggleSettings} onSearch={handleSearch} />
+        <SearchBar onLocationSelect = {handleLocationSelect} toggleSettings={toggleSettings} onSearch={handleSearch} />
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
-      <APIProvider apiKey="AIzaSyDsEGZgrOkbNKUQaT_2OuMbBqNL5gjO1iI">
+      <APIProvider apiKey= {import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      >
         <Map
           key={mapID} // Ensures Map remounts when mapID changes
           style={{ width: "100vw", height: "100vh" }}

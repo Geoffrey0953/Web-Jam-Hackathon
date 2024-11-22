@@ -38,7 +38,7 @@ const About = () => {
         </p>
 
         {/* Contact Us Button */}
-        <button className="mt-16 bg-[#1E5AFF] text-white w-60 px-4 py-2 rounded-full font-museo flex items-center justify-center">
+        <button className="mt-16 bg-[#1E5AFF] text-white w-60 px-4 py-2 rounded-full font-museo flex items-center justify-center " onClick={() => (window.location.href = "/contact")}>
           Contact Us!
           <img src={Right} alt="Forward Icon" className="ml-4 w-6 h-6" />
         </button>

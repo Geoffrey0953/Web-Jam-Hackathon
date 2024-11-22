@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import FillerPic from "../assets/grey.jpg";
+import FillerPic from "../assets/download.jpg";
 import Cancel from "../assets/cancel.svg";
+import Go from "../assets/go.svg";
 
 const PlaceInfo = ({ place, onClose }) => {
   const [isExiting, setIsExiting] = useState(false);
@@ -64,7 +65,7 @@ const PlaceInfo = ({ place, onClose }) => {
 
   return (
     <div 
-      className={`absolute top-0 left-0 w-[528px] bg-white h-screen font-josefin transform transition-all duration-300 z-50 ease-in-out ${
+      className={`absolute top-0 left-0 w-[528px] bg-white h-screen font-josefin transform transition-all duration-300 z-50 ease-in-out overflow-y-auto ml-8${
         isExiting ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
       }`}
       style={{
@@ -86,11 +87,6 @@ const PlaceInfo = ({ place, onClose }) => {
           }
         `}
       </style>
-      {/* <img
-        src={FillerPic}
-        alt="restaurant"
-        className="w-full h-80 object-cover"
-      /> */}
       <img
         src={placePhoto}
         alt="restaurant"
@@ -109,19 +105,6 @@ const PlaceInfo = ({ place, onClose }) => {
        <p className="text-3xl normal-case">
          {place?.name ? place.name.replace(/\^+$/, '').trim() : "Place Name"}
        </p>
-       <p className="text-base text-[#5C5C5C]">
-         <span className="font-bold">
-           {place?.reason 
-             ? place.reason 
-             : place?.categories 
-               ? Object.entries(place.categories)
-                   .filter(([_, value]) => value)
-                   .map(([key]) => key)
-                   .join(", ") 
-               : "No Information Available"
-           }
-          </span>
-        </p>
         <p className="text-base text-gray-700">
           <span
             className="text-[#1E5AFF] cursor-pointer hover:underline transition-all duration-200"
@@ -131,20 +114,50 @@ const PlaceInfo = ({ place, onClose }) => {
           </span>
         </p>
       </div>
-      {place?.summary && (
-        <p className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed text-center">
-          {place.summary}
-          {place?.pdfURL && (
-            <a 
-              href={place.pdfURL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block mt-2 text-[#1E5AFF] hover:underline transition-all duration-200"
-            >
-              View Inspection Report PDF
-            </a>
+      {place?.categories && Object.values(place.categories).some((value) => value) && (
+        <>
+          <p className="m-4 text-xl">Recent Violations</p>
+        </>
+      )}
+
+      <p className="text-base text-[#B62D2D] ml-8">
+        <span className="font-bold">
+          {place?.reason ? (
+            <ul className="list-disc list-inside">
+              <li>{place.reason}</li>
+            </ul>
+          ) : place?.categories ? (
+            <ul className="list-disc list-inside">
+              {Object.entries(place.categories)
+                .filter(([_, value]) => value)
+                .map(([key]) => (
+                  <li key={key}>{key}</li>
+                ))}
+            </ul>
+          ) : (
+            "No Information Available"
           )}
-        </p>
+        </span>
+      </p>
+      {place?.summary && (
+        
+          <p className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed flex items-center flex-col">
+            <p>{place.summary}</p>
+            {place?.pdfURL && (
+              <button className="rounded border-2 border-[#1E5AFF] flex mt-4 p-2">
+                <a 
+                  href={place.pdfURL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-[#1E5AFF] hover:underline transition-all duration-200"
+                >
+                  View Inspection Report
+                </a>
+                <img src={Go} />
+                </button>
+            )}
+          </p>
+        
       )}
     </div>
   );

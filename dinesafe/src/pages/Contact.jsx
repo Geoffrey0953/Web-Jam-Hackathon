@@ -30,29 +30,29 @@ const Contact = () => {
             <img src={Kelly} className="w-48"></img>
             <p className="font-museo text-2xl font-semibold">Kelly Serafico</p>
             <p className="font-museo text-xl font-regular text-[#414A62]">Software Engineering</p>
-            <p className="font-museo text-xl font-light text-center">UI design and frontend implementation</p>
+            <p className="font-museo text-xl font-light text-center">UI Design and Fullstack Implementation</p>
             <p className="font-museo text-xl font-regular text-[#1E5AFF]">serafick@uci.edu</p>
         </div>
         <div className="flex justify-center items-center flex-col w-72">
             <img src={Anthony} className="w-48"></img>
             <p className="font-museo text-2xl font-semibold ">Anthony Suh</p>
             <p className="font-museo text-xl font-regular text-[#414A62]">Computer Science</p>
-            <p className="font-museo text-xl font-light text-center">Backend implementation</p>
-            <p className="font-museo text-xl font-regular text-[#1E5AFF]">email</p>
+            <p className="font-museo text-xl font-light text-center">Database and Fullstack Implementation</p>
+            <p className="font-museo text-xl font-regular text-[#1E5AFF]">anthod1@uci.edu</p>
         </div>
         <div className="flex justify-center items-center flex-col w-72">
             <img src={Geoffrey} className="w-48"></img>
             <p className="font-museo text-2xl font-semibold">Geoffrey Lee</p>
             <p className="font-museo text-xl font-regular text-[#414A62]">Software Engineering</p>
-            <p className="font-museo text-xl font-light text-center">Fill In</p>
+            <p className="font-museo text-xl font-light text-center">Fullstack Implementation</p>
             <p className="font-museo text-xl font-regular text-[#1E5AFF]">geoffrl1@uci.edu</p>
         </div>
         <div className="flex justify-center items-center flex-col w-72">
             <img src={Andy} className="w-48"></img>
             <p className="font-museo text-2xl font-semibold">Andy Choi</p>
             <p className="font-museo text-xl font-regular text-[#414A62]">Computer Science</p>
-            <p className="font-museo text-xl font-light text-center">Fill In</p>
-            <p className="font-museo text-xl font-regular text-[#1E5AFF]">email</p>
+            <p className="font-museo text-xl font-light text-center">Fullstack Implementation</p>
+            <p className="font-museo text-xl font-regular text-[#1E5AFF]">andywc@uci.edu</p>
         </div>
       </div>
       
