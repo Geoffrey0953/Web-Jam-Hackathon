@@ -6,7 +6,11 @@ require('dotenv').config();
 const app = express();
 
 // Enable CORS
-app.use(cors());
+app.use(cors({
+    origin: ["https://web-jam-hackathon-front.vercel.app/"],
+    methods: ["POST", "GET"],
+    credentials: true
+  }));
 app.use(express.json());
 
 // MongoDB connection
