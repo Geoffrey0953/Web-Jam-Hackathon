@@ -6,8 +6,12 @@ require("dotenv").config();
 const app = express();
 
 // Enable CORS
-app.use(cors({
-    origin: ["https://web-jam-hackathon-front.vercel.app"],
+app.use(
+  cors({
+    origin: [
+      "https://web-jam-hackathon-front.vercel.app",
+      "https://dinesafe-tswd.vercel.app",
+    ],
     methods: ["POST", "GET"],
     credentials: true,
   })
@@ -39,27 +43,27 @@ async function connectDB() {
 connectDB();
 
 // Routes
-app.get('/', (req, res) => {
-    res.json({ status: 'API is running' });
+app.get("/", (req, res) => {
+  res.json({ status: "API is running" });
 });
 
-app.get('/api/restaurants', async (req, res) => {
-    try {
-        if (!db) {
-            await connectDB();  // Make sure we're connected
-        }
-        console.log('Attempting to fetch restaurants');
-        const restaurants = await db.collection('oc_inspections').find().toArray();
-        console.log(`Found ${restaurants.length} restaurants`);
-        res.json(restaurants);
-    } catch (error) {
-        console.error('Database error:', error);
-        res.status(500).json({ 
-            error: 'Error fetching restaurants',
-            details: error.message,
-            stack: error.stack
-        });
+app.get("/api/restaurants", async (req, res) => {
+  try {
+    if (!db) {
+      await connectDB(); // Make sure we're connected
     }
+    console.log("Attempting to fetch restaurants");
+    const restaurants = await db.collection("oc_inspections").find().toArray();
+    console.log(`Found ${restaurants.length} restaurants`);
+    res.json(restaurants);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({
+      error: "Error fetching restaurants",
+      details: error.message,
+      stack: error.stack,
+    });
+  }
 });
 
 app.get("/api/300restaurants", async (req, res) => {
