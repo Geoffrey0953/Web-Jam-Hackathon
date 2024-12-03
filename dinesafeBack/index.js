@@ -8,10 +8,7 @@ const app = express();
 // Enable CORS
 app.use(
   cors({
-    origin: [
-      "https://web-jam-hackathon-front.vercel.app",
-      "https://dinesafe-tswd.vercel.app",
-    ],
+    origin: ["https://web-jam-hackathon-front.vercel.app"],
     methods: ["POST", "GET"],
     credentials: true,
   })
