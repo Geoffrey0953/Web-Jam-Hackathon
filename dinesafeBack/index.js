@@ -132,33 +132,32 @@ app.get("/api/place-photo", async (req, res) => {
 });
 
 app.get("/api/search-restaurants", async (req, res) => {
-    const { query } = req.query;
+  const { query } = req.query;
 
-    if (!query) {
-        return res.status(400).json({ error: "Search query is required" });
-    }
+  if (!query) {
+    return res.status(400).json({ error: "Search query is required" });
+  }
 
-    try {
-        const database = await connectDB();
-        console.log(`Searching for: ${query}`);
+  try {
+    //   console.log(`Searching for: ${query}`);
 
-        const [results1, results2] = await Promise.all([
-            database.collection("oc_inspections")
-                .find({ name: { $regex: query, $options: "i" } })
-                .toArray(),
-            database.collection("oc_inspections2")
-                .find({ name: { $regex: query, $options: "i" } })
-                .toArray(),
-        ]);
+    const [results1, results2] = await Promise.all([
+      db
+        .collection("oc_inspections")
+        .find({ name: { $regex: query, $options: "i" } })
+        .toArray(),
+      db
+        .collection("oc_inspections2")
+        .find({ name: { $regex: query, $options: "i" } })
+        .toArray(),
+    ]);
 
-        const combinedResults = [...results1, ...results2];
-        console.log(`Found ${combinedResults.length} results`);
-        res.json(combinedResults);
-    } catch (error) {
-        console.error("Database error:", error);
-        res.status(500).json({ 
-            error: "Error searching for restaurants",
-            details: error.message
-        });
-    }
+    const combinedResults = [...results1, ...results2];
+    //   console.log(`Found ${combinedResults.length} results`);
+
+    res.json(combinedResults);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Error searching for restaurants" });
+  }
 });
