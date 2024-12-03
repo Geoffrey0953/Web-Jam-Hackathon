@@ -138,25 +138,39 @@ app.get("/api/search-restaurants", async (req, res) => {
   }
 
   try {
-    //   console.log(`Searching for: ${query}`);
+    if (!db) {
+      await connectDB(); // Ensure the database connection is established
+    }
+
+    const escapeRegex = (text) =>
+      text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); // Escape special characters
+    const safeQuery = escapeRegex(query);
 
     const [results1, results2] = await Promise.all([
       db
         .collection("oc_inspections")
-        .find({ name: { $regex: query, $options: "i" } })
+        .find({ name: { $regex: safeQuery, $options: "i" } })
         .toArray(),
       db
         .collection("oc_inspections2")
-        .find({ name: { $regex: query, $options: "i" } })
+        .find({ name: { $regex: safeQuery, $options: "i" } })
         .toArray(),
     ]);
 
     const combinedResults = [...results1, ...results2];
-    //   console.log(`Found ${combinedResults.length} results`);
+
+    if (combinedResults.length === 0) {
+      return res.status(404).json({ message: "No restaurants found" });
+    }
 
     res.json(combinedResults);
   } catch (error) {
     console.error("Database error:", error);
-    res.status(500).json({ error: "Error searching for restaurants" });
+    res
+      .status(500)
+      .json({
+        error: "Error searching for restaurants",
+        details: error.message,
+      });
   }
 });
