@@ -39,6 +39,10 @@ async function connectDB() {
 connectDB();
 
 // Routes
+app.get('/', (req, res) => {
+    res.json({ status: 'API is running' });
+});
+
 app.get("/api/restaurants", async (req, res) => {
   try {
     const restaurants = await db.collection("oc_inspections").find().toArray();
