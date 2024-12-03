@@ -15,7 +15,7 @@ const SearchBar = ({ onLocationSelect, toggleSettings, onSearch }) => {
     if (query.trim()) {
       try {
         const response = await fetch(
-          `https://web-jam-hackathon-back.vercel.app/search-restaurants?query=${encodeURIComponent(
+          `https://web-jam-hackathon-back.vercel.app/api/search-restaurants?query=${encodeURIComponent(
             query
           )}`
         );
