@@ -43,39 +43,28 @@ app.get('/', (req, res) => {
     res.json({ status: 'API is running' });
 });
 
-app.get('/api/restaurants', async (req, res) => {
-    try {
-        if (!db) {
-            await connectDB();  // Make sure we're connected
-        }
-        console.log('Attempting to fetch restaurants');
-        const restaurants = await db.collection('oc_inspections').find().toArray();
-        console.log(`Found ${restaurants.length} restaurants`);
-        res.json(restaurants);
-    } catch (error) {
-        console.error('Database error:', error);
-        res.status(500).json({ 
-            error: 'Error fetching restaurants',
-            details: error.message,
-            stack: error.stack
-        });
-    }
+app.get("/api/restaurants", async (req, res) => {
+  try {
+    const restaurants = await db.collection("oc_inspections").find().toArray();
+    res.json(restaurants);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Error fetching restaurants" });
+  }
 });
 
 app.get("/api/300restaurants", async (req, res) => {
-    try {
-        const database = await connectDB();
-        console.log('Attempting to fetch 300 restaurants');
-        const restaurants = await database.collection("oc_inspections2").find().toArray();
-        console.log(`Found ${restaurants.length} restaurants`);
-        res.json(restaurants);
-    } catch (error) {
-        console.error("Database error:", error);
-        res.status(500).json({ 
-            error: "Error fetching restaurants",
-            details: error.message
-        });
-    }
+  try {
+    const restaurants = await db.collection("oc_inspections2").find().toArray();
+    res.json(restaurants);
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Error fetching restaurants" });
+  }
+});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 app.get("/api/place-photo", async (req, res) => {
