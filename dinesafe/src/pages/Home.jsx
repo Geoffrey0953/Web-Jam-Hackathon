@@ -50,7 +50,9 @@ const Home = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/restaurants");
+        const response = await fetch(
+          "https://web-jam-hackathon-back.vercel.app/api/restaurants"
+        );
         const data = await response.json();
 
         const transformedData = await Promise.all(
@@ -83,13 +85,12 @@ const Home = () => {
     const fetch300Restaurants = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/300restaurants"
+          "https://web-jam-hackathon-back.vercel.app/api/300restaurants"
         );
         const data = await response.json();
 
         setInspectedRestaurants(
           data.map((inspectedRestaurant) => ({
-            
             id: inspectedRestaurant._id,
             name: inspectedRestaurant.name,
             address: inspectedRestaurant.address,
@@ -108,8 +109,6 @@ const Home = () => {
 
     fetch300Restaurants();
   }, []);
-
-  
 
   // Use the IDs from the restaurants given by our two functions
 
@@ -133,9 +132,11 @@ const Home = () => {
 
   const fetchRestaurantsByQuery = async (query) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/restaurants?query=${query}`);
+      const response = await fetch(
+        `https://web-jam-hackathon-back.vercel.app/api/restaurants?query=${query}`
+      );
       const data = await response.json();
-  
+
       setRestaurants(
         data.map((restaurant) => ({
           id: restaurant._id,
@@ -150,17 +151,19 @@ const Home = () => {
       console.error("Error searching restaurants:", error);
     }
   };
-  
+
   const fetchInspectedRestaurantsByQuery = async (query) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/300restaurants?query=${query}`);
+      const response = await fetch(
+        `https://web-jam-hackathon-back.vercel.app/api/300restaurants?query=${query}`
+      );
       const data = await response.json();
-  
+
       setInspectedRestaurants(
         data.map((restaurant) => ({
           id: restaurant._id,
           name: restaurant.name,
-          address: restaurant.address.replace(/\s+(?:Suite|Ste|#)\s+\S+/i, ''),
+          address: restaurant.address.replace(/\s+(?:Suite|Ste|#)\s+\S+/i, ""),
           lat: restaurant.location.lat,
           lng: restaurant.location.lng,
         }))
@@ -169,27 +172,28 @@ const Home = () => {
       console.error("Error searching inspected restaurants:", error);
     }
   };
-  
+
   const handleSearch = (query) => {
     fetchRestaurantsByQuery(query);
     fetchInspectedRestaurantsByQuery(query);
   };
-  
 
-  // // Places API picture right here :D 
+  // // Places API picture right here :D
   // In Home.jsx or a separate API service filefw
-  
 
   return (
     <div className="relative">
       <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-b from-black/40 to-transparent pointer-events-none z-50"></div>
       <div className="flex flex-row justify-between absolute w-full mt-4">
-        <SearchBar onLocationSelect = {handleLocationSelect} toggleSettings={toggleSettings} onSearch={handleSearch} />
+        <SearchBar
+          onLocationSelect={handleLocationSelect}
+          toggleSettings={toggleSettings}
+          onSearch={handleSearch}
+        />
         <img src={Logo} alt="logo" className="z-40 m-4" />
       </div>
 
-      <APIProvider apiKey= {import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-      >
+      <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <Map
           key={mapID} // Ensures Map remounts when mapID changes
           style={{ width: "100vw", height: "100vh" }}
@@ -210,7 +214,7 @@ const Home = () => {
             },
           }}
         >
-        {/* // Original restaurants */}
+          {/* // Original restaurants */}
           {restaurants.map((restaurant) => (
             <Marker
               key={restaurant.id}

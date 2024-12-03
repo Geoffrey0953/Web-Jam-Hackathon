@@ -8,21 +8,22 @@ const SearchBar = ({ onLocationSelect, toggleSettings, onSearch }) => {
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [showSearch, setShowSearch] = useState(true);
 
-
   const handleInputChange = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-  
+
     if (query.trim()) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/search-restaurants?query=${encodeURIComponent(query)}`
+          `https://web-jam-hackathon-back.vercel.app/search-restaurants?query=${encodeURIComponent(
+            query
+          )}`
         );
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
+
         const data = await response.json();
         setSearchResults(data);
       } catch (error) {
@@ -33,12 +34,12 @@ const SearchBar = ({ onLocationSelect, toggleSettings, onSearch }) => {
       setSearchResults([]); // Clear results when query is empty
     }
   };
-  
+
   return (
     <div className="relative w-96 bg-white z-10 rounded-full h-14 flex ml-4 shadow-lg">
       {/* Menu Icon triggers toggleSettings */}
       {selectedPlace && (
-        <PlaceInfo 
+        <PlaceInfo
           place={selectedPlace}
           onClose={() => {
             setSelectedPlace(null);
@@ -46,20 +47,19 @@ const SearchBar = ({ onLocationSelect, toggleSettings, onSearch }) => {
         />
       )}
       <img
-          src={Menu}
-          alt="menu"
-          className="w-6 h-6 m-4 cursor-pointer"
-          onClick={toggleSettings}
-          />
-          <input
-            className="w-9/12 outline-none px-2"
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleInputChange}
-          />
-      
-      
+        src={Menu}
+        alt="menu"
+        className="w-6 h-6 m-4 cursor-pointer"
+        onClick={toggleSettings}
+      />
+      <input
+        className="w-9/12 outline-none px-2"
+        type="text"
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={handleInputChange}
+      />
+
       {/* Display search results below the search bar */}
       {searchResults.length > 0 && (
         <ul
@@ -78,13 +78,15 @@ const SearchBar = ({ onLocationSelect, toggleSettings, onSearch }) => {
                 onLocationSelect(restaurant.lat, restaurant.lng);
               }}
             >
-              {restaurant.name ? restaurant.name.replace(/\^+$/, '').trim() : restaurant.name}
+              {restaurant.name
+                ? restaurant.name.replace(/\^+$/, "").trim()
+                : restaurant.name}
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-}
+};
 
 export default SearchBar;

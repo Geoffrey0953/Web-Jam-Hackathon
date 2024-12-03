@@ -23,14 +23,18 @@ const PlaceInfo = ({ place, onClose }) => {
         }
 
         const params = new URLSearchParams({
-          name: place.name || '',
-          address: place.address ? (place.city ? `${place.address}, ${place.city}, CA` : place.address) : ''
+          name: place.name || "",
+          address: place.address
+            ? place.city
+              ? `${place.address}, ${place.city}, CA`
+              : place.address
+            : "",
         });
 
         const response = await fetch(
-          `http://localhost:5000/api/place-photo?${params}`
+          `https://web-jam-hackathon-back.vercel.app/api/place-photo?${params}`
         );
-        
+
         if (!response.ok) {
           setPlacePhoto(FillerPic);
           return;
@@ -38,7 +42,6 @@ const PlaceInfo = ({ place, onClose }) => {
 
         const data = await response.json();
         setPlacePhoto(data.photoUrl);
-
       } catch (error) {
         console.error("Error fetching place photo:", error);
         setPlacePhoto(FillerPic);
@@ -46,7 +49,7 @@ const PlaceInfo = ({ place, onClose }) => {
     };
 
     getPhoto();
-}, [place]);
+  }, [place]);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -54,23 +57,20 @@ const PlaceInfo = ({ place, onClose }) => {
     });
   };
 
-  const formattedAddress = place?.address 
-    ? place.city 
+  const formattedAddress = place?.address
+    ? place.city
       ? `${place.address}, ${place.city}, CA`
       : `${place.address}`
     : "Unknown Address, CA";
 
-
-    
-
   return (
-    <div 
+    <div
       className={`absolute top-0 left-0 w-[528px] bg-white h-screen font-josefin transform transition-all duration-300 z-50 ease-in-out overflow-y-auto ml-8${
-        isExiting ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'
+        isExiting ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
       }`}
       style={{
         boxShadow: "0 0 15px rgba(0,0,0,0.1)",
-        animation: "slideIn 0.3s ease-out"
+        animation: "slideIn 0.3s ease-out",
       }}
     >
       <style>
@@ -99,12 +99,12 @@ const PlaceInfo = ({ place, onClose }) => {
           onClick={handleClose}
         >
           <img src={Cancel} alt="cancel" className="w-4 h-4" />
-       </button>
+        </button>
 
-       {/* Place Information */}
-       <p className="text-3xl normal-case">
-         {place?.name ? place.name.replace(/\^+$/, '').trim() : "Place Name"}
-       </p>
+        {/* Place Information */}
+        <p className="text-3xl normal-case">
+          {place?.name ? place.name.replace(/\^+$/, "").trim() : "Place Name"}
+        </p>
         <p className="text-base text-gray-700">
           <span
             className="text-[#1E5AFF] cursor-pointer hover:underline transition-all duration-200"
@@ -114,11 +114,12 @@ const PlaceInfo = ({ place, onClose }) => {
           </span>
         </p>
       </div>
-      {place?.categories && Object.values(place.categories).some((value) => value) && (
-        <>
-          <p className="m-4 text-xl">Recent Violations</p>
-        </>
-      )}
+      {place?.categories &&
+        Object.values(place.categories).some((value) => value) && (
+          <>
+            <p className="m-4 text-xl">Recent Violations</p>
+          </>
+        )}
 
       <div className="text-base text-[#B62D2D] ml-8">
         <span className="font-bold">
@@ -140,24 +141,22 @@ const PlaceInfo = ({ place, onClose }) => {
         </span>
       </div>
       {place?.summary && (
-        
-          <div className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed flex items-center flex-col">
-            <span>{place.summary}</span>
-            {place?.pdfURL && (
-              <button className="rounded border-2 border-[#1E5AFF] flex mt-4 p-2">
-                <a 
-                  href={place.pdfURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-[#1E5AFF] hover:underline transition-all duration-200"
-                >
-                  View Inspection Report
-                </a>
-                <img src={Go} />
-                </button>
-            )}
-          </div>
-        
+        <div className="text-base text-gray-700 mt-4 mb-4 px-4 leading-relaxed flex items-center flex-col">
+          <span>{place.summary}</span>
+          {place?.pdfURL && (
+            <button className="rounded border-2 border-[#1E5AFF] flex mt-4 p-2">
+              <a
+                href={place.pdfURL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-[#1E5AFF] hover:underline transition-all duration-200"
+              >
+                View Inspection Report
+              </a>
+              <img src={Go} />
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
